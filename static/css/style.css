@@ -126,19 +126,6 @@ body {
     width: 100%;
 }
 
-.hamburger {
-    display: none;
-    flex-direction: column;
-    cursor: pointer;
-    gap: 5px;
-}
-
-.hamburger span {
-    width: 25px;
-    height: 2px;
-    background: var(--accent);
-    transition: all var(--transition-fast);
-}
 
 /* ============================================
    Hero Section
@@ -257,11 +244,10 @@ body {
     max-width: 500px;
     height: auto;
     display: block;
-    vertical-align: bottom;
-    /* Show full image without cropping; natural proportions preserved */
     object-fit: contain;
     object-position: center bottom;
 }
+
 
 /* ============================================
    Animations
@@ -595,6 +581,7 @@ body {
 .project-card--featured {
     grid-column: 1 / -1;
     position: relative;
+    overflow: visible;
 }
 
 .project-label {
@@ -605,10 +592,25 @@ body {
     font-weight: 700;
     letter-spacing: 1.5px;
     text-transform: uppercase;
-    padding: 0.35rem 1rem;
-    border-radius: 4px;
+    padding: 0.4rem 1.2rem;
+    border-radius: 0 4px 4px 0;
+    margin-left: calc(-2.5rem - 10px);
+    padding-left: calc(2.5rem + 10px);
     margin-bottom: 1.25rem;
+    position: relative;
     align-self: flex-start;
+}
+
+.project-label::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: -8px;
+    width: 0;
+    height: 0;
+    border-style: solid;
+    border-width: 8px 10px 0 0;
+    border-color: color-mix(in srgb, var(--accent) 55%, black) transparent transparent transparent;
 }
 
 .project-card-title {
@@ -1070,6 +1072,13 @@ a.contact-method-item {
 }
 
 /* ============================================
+   Body scroll lock when mobile menu is open
+   ============================================ */
+body.menu-open {
+    overflow: hidden;
+}
+
+/* ============================================
    Responsive Design
    ============================================ */
 @media (max-width: 1024px) {
@@ -1109,6 +1118,7 @@ a.contact-method-item {
 
     .hero-intro {
         font-size: 2.5rem;
+        white-space: normal;
     }
 
     .hero-name {
@@ -1116,6 +1126,10 @@ a.contact-method-item {
     }
 
     .contact-title {
+        font-size: 3rem;
+    }
+
+    .page-title {
         font-size: 3rem;
     }
 
@@ -1129,54 +1143,64 @@ a.contact-method-item {
 }
 
 @media (max-width: 768px) {
-    .hamburger {
-        display: flex;
+    body {
+        padding-top: 3.5rem;
+    }
+
+    html {
+        scroll-padding-top: 3.5rem;
+    }
+
+    .navbar {
+        padding: 1rem 0;
     }
 
     .nav-menu {
-        position: fixed;
-        left: -100%;
-        top: 70px;
-        flex-direction: column;
-        background: rgba(26, 26, 46, 0.98);
-        backdrop-filter: blur(20px);
-        width: 100%;
-        text-align: center;
-        transition: 0.3s;
-        padding: 3rem 0;
-        border-bottom: 1px solid var(--border-color);
-        gap: 2rem;
+        gap: 1.8rem;
     }
 
-    .nav-menu.active {
-        left: 0;
+    .nav-link {
+        font-size: 0.75rem;
+        letter-spacing: 0.3px;
+    }
+
+    .hero-section {
+        min-height: auto;
+        padding-bottom: 3rem;
     }
 
     .hero-container {
         flex-direction: column;
-        min-height: auto;
-        padding: 6rem 1.5rem 2rem;
+        min-height: 75vh;
+        padding: 0 1.5rem 0;
+        margin-top: -9.5rem;
     }
 
     .orange-background-box {
         width: 80%;
-        height: 60%;
-        top: 20%;
+        top: auto;
+        bottom: 8%;
+        height: 55%;
         right: 5%;
     }
 
     .hero-text-box {
-        margin-left: 0;
-        max-width: 100%;
-        padding: 2.5rem;
+        margin-left: 0.25rem;
+        max-width: 80%;
+        padding: 2rem 1.5rem;
+        border-width: 1px;
+        position: relative;
+        z-index: 3;
+        transform: translateY(12rem);
+        align-self: flex-start;
     }
 
     .hero-photo {
-        position: relative;
-        right: auto;
-        bottom: auto;
-        text-align: center;
-        margin-top: 2rem;
+        position: absolute;
+        right: 5%;
+        bottom: 8%;
+        margin-top: 0;
+        z-index: 2;
     }
 
     .hero-greeting {
@@ -1184,7 +1208,8 @@ a.contact-method-item {
     }
 
     .hero-intro {
-        font-size: 2.5rem;
+        font-size: 2rem;
+        white-space: normal;
     }
 
     .hero-name {
@@ -1197,11 +1222,17 @@ a.contact-method-item {
     }
 
     .hero-main-image {
-        max-width: 300px;
+        max-width: 280px;
+        margin: 0;
+    }
+
+    .social-icon {
+        width: 44px;
+        height: 44px;
     }
 
     .about-section {
-        padding: 4rem 1.5rem 6rem;
+        padding: 3rem 1.5rem 4rem;
     }
 
     .about-content-grid {
@@ -1212,61 +1243,217 @@ a.contact-method-item {
 
     .about-photo-wrapper {
         margin: 0 auto;
+        max-width: 280px;
     }
 
     .about-heading {
         font-size: 2rem;
     }
 
+    .about-section .about-description {
+        font-size: 0.95rem;
+    }
+
+    .page-section {
+        padding: 3rem 1.5rem 3rem;
+    }
+
+    .page-header {
+        margin-bottom: 3rem;
+    }
+
+    .page-title {
+        font-size: 2.5rem;
+    }
+
+    .page-subtitle {
+        font-size: 0.8rem;
+        letter-spacing: 2px;
+    }
+
+    .project-card {
+        padding: 1.75rem;
+    }
+
+    .project-card-title {
+        font-size: 1.2rem;
+    }
+
+    .project-card--featured .project-card-title {
+        font-size: 1.3rem;
+    }
+
+    .project-card-desc {
+        font-size: 0.9rem;
+    }
+
+    .contact-section {
+        min-height: auto;
+        padding: 3rem 1.5rem 3rem;
+    }
+
+    .contact-header {
+        margin-bottom: 3rem;
+    }
+
     .contact-title {
         font-size: 2.5rem;
+    }
+
+    .contact-info-side h2 {
+        font-size: 1.5rem;
+    }
+
+    .contact-description {
+        margin-bottom: 2rem;
     }
 
     .form-row {
         grid-template-columns: 1fr;
     }
 
-    .nav-container,
+    .btn-submit {
+        width: 100%;
+        text-align: center;
+        padding: 1rem 2rem;
+    }
+
+    .contact-method-item {
+        padding: 1rem 0;
+    }
+
+    .nav-container {
+        padding: 0 1rem;
+    }
+
     .footer-container {
         padding: 0 1.5rem;
     }
 
+    .footer-container {
+        flex-direction: column;
+        text-align: center;
+        gap: 1rem;
+    }
+
     .footer-links {
         gap: 1.5rem;
+        flex-wrap: wrap;
+        justify-content: center;
     }
 }
 
 @media (max-width: 480px) {
+    body {
+        padding-top: 4rem;
+    }
+
+    html {
+        scroll-padding-top: 4rem;
+    }
+
+    .nav-container {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 0.5rem;
+        padding: 0 0.75rem;
+    }
+
+    .nav-logo {
+        margin-right: auto;
+    }
+
+    .nav-menu {
+        gap: 1.2rem;
+    }
+
+    .nav-link {
+        font-size: 0.7rem;
+    }
+
     .hero-container {
-        padding: 5rem 1rem 2rem;
+        padding: 1rem 1rem 0;
+        min-height: 80vh;
     }
 
     .hero-text-box {
-        padding: 2rem 1.5rem;
-    }
-
-    .contact-section {
-        padding: 8rem 1rem 2rem;
+        padding: 1.5rem 1.25rem;
     }
 
     .hero-intro {
-        font-size: 2rem;
+        font-size: 1.6rem;
     }
 
     .hero-name {
-        font-size: 1.75rem;
+        font-size: 1.6rem;
+    }
+
+    .hero-greeting {
+        font-size: 1rem;
+    }
+
+    .hero-role {
+        font-size: 0.9rem;
     }
 
     .hero-main-image {
-        max-width: 250px;
+        max-width: 200px;
+    }
+
+    .about-section {
+        padding: 2.5rem 1rem 3rem;
+    }
+
+    .about-photo-wrapper {
+        max-width: 200px;
+    }
+
+    .about-heading {
+        font-size: 1.75rem;
+    }
+
+    .about-section .about-description {
+        font-size: 0.9rem;
+    }
+
+    .page-section {
+        padding: 2.5rem 1rem 2.5rem;
+    }
+
+    .page-title {
+        font-size: 2rem;
+    }
+
+    .contact-section {
+        padding: 2.5rem 1rem 2.5rem;
     }
 
     .contact-title {
         font-size: 2rem;
     }
 
-    .about-photo-wrapper {
-        width: 150px;
-        height: 150px;
+    .project-card {
+        padding: 1.5rem;
+    }
+
+    .project-card-desc {
+        font-size: 0.85rem;
+    }
+
+    .project-tags li {
+        font-size: 0.7rem;
+        padding: 0.3rem 0.7rem;
+    }
+
+    .footer-links {
+        gap: 1rem;
+    }
+
+    .footer-links a {
+        font-size: 0.8rem;
+    }
+
+    .footer-container p {
+        font-size: 0.8rem;
     }
 }
