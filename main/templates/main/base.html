@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<!--
+    EASTER EGG: Hello developer!
+    You found the HTML easter egg! This site was built with Django and a lot of passion.
+    Want to connect? Check out the contact page or find me on GitHub!
+    P.S. - The answer to life, the universe, and everything is 42. But you already knew that.
+    
+    HUNT FOR MORE EASTER EGGS:
+    - CSS: Open DevTools (F12), go to Sources/Network tab, find style.css, or visit /static/css/style.css
+    - JavaScript: Same as above, but look for main.js, or visit /static/js/main.js
+    - Python: Check out the GitHub repo (if public) or the views.py file
+    Happy hunting!
+-->
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Alex Petrakes - Software Developer">
+    <title>{% block title %}{{ title }}{% endblock %}</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body class="{% block body_class %}{{ body_class|default:'' }}{% endblock %}">
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="{% url 'home' %}" class="nav-logo">
+                <span class="nav-logo-icon">A</span>
+            </a>
+            <ul class="nav-menu">
+                <li><a href="{% url 'home' %}" class="nav-link">Home</a></li>
+                <li><a href="{% url 'home' %}#about" class="nav-link">About me</a></li>
+                <li><a href="{% url 'home' %}#projects" class="nav-link">Projects</a></li>
+                <li><a href="{% url 'home' %}#contact" class="nav-link">Contact me</a></li>
+            </ul>
+            <div class="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <main>
+        {% block content %}
+        {% endblock %}
+    </main>
+
+    <footer class="footer">
+        <div class="footer-container">
+            <p>&copy; {% now "Y" %} Alex Petrakes. All rights reserved.</p>
+            <div class="footer-links">
+                <a href="{% url 'home' %}">Home</a>
+                <a href="{% url 'home' %}#about">About me</a>
+                <a href="{% url 'home' %}#projects">Projects</a>
+                <a href="{% url 'home' %}#contact">Contact</a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="{% static 'js/main.js' %}"></script>
+</body>
+</html>
