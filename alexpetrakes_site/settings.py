@@ -21,6 +21,7 @@ DEBUG = os.environ.get('DEBUG', 'True') == 'True'
 ALLOWED_HOSTS = [
     'alexpetrakes.com',
     'www.alexpetrakes.com',
+    'alexpetrakes-com.onrender.com',  # Render free-tier URL
     'alexpetrakes.org',
     'www.alexpetrakes.org',
     'alexpetrakes.net',
