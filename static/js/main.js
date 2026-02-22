@@ -4,26 +4,7 @@
 document.addEventListener('DOMContentLoaded', function() {
     console.log('Website loaded');
     
-    // Mobile Navigation Toggle
-    const hamburger = document.querySelector('.hamburger');
-    const navMenu = document.querySelector('.nav-menu');
-
-    if (hamburger && navMenu) {
-        hamburger.addEventListener('click', function() {
-            navMenu.classList.toggle('active');
-            hamburger.classList.toggle('active');
-            console.log('Mobile menu toggled');
-        });
-
-        // Close menu when clicking on a link
-        document.querySelectorAll('.nav-link').forEach(link => {
-            link.addEventListener('click', () => {
-                navMenu.classList.remove('active');
-                hamburger.classList.remove('active');
-                console.log('Mobile menu closed via link click');
-            });
-        });
-    }
+    console.log('Navigation links displayed inline on all screen sizes');
 
     // Image loading with fallback
     const heroImage = document.getElementById('heroImage');

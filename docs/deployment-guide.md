@@ -107,6 +107,28 @@ Their [Django tutorial](https://help.pythonanywhere.com/pages/DeployExistingDjan
 
 ---
 
+## Other hosting options
+
+Besides **Render** and **PythonAnywhere**, you can use any of these. Same idea: push code, set `SECRET_KEY` and `DEBUG=False`, run `collectstatic`, start with `gunicorn alexpetrakes_site.wsgi:application`, then point alexpetrakes.com via DNS.
+
+| Option | Best for | Free tier? | Notes |
+|--------|----------|------------|--------|
+| **[Railway](https://railway.app)** | Easiest “next” after Render | Yes (limited) | Connect GitHub, add a Web Service, set build/start commands and env vars. Custom domains supported. |
+| **[Fly.io](https://fly.io)** | Global edge, more control | Yes (generous) | Deploy with `flyctl`. Slightly more technical; great docs. Custom domains and free SSL. |
+| **[DigitalOcean App Platform](https://www.digitalocean.com/products/app-platform)** | Simple PaaS, predictable billing | Free tier for static; paid for apps | Connect repo, configure as Python app, add env vars and custom domain. |
+| **[Heroku](https://www.heroku.com)** | Familiar name, lots of tutorials | No (paid only) | Add a Procfile: `web: gunicorn alexpetrakes_site.wsgi`. No free dynos anymore. |
+| **VPS (DigitalOcean Droplet, Linode, Vultr, etc.)** | Full control, learning servers | Pay per month (~$5–6) | You install Python, nginx, gunicorn, and SSL (e.g. Certbot). More setup, full control. |
+| **Cloud (AWS, Google Cloud, Azure)** | Scaling, enterprise needs | Free tiers exist but complex | Use Elastic Beanstalk, Cloud Run, or App Service. Overkill for a single personal site unless you want to learn the platform. |
+
+**Quick picks:**
+
+- **Easiest with a free tier:** Render (this guide) or Railway.
+- **Free and beginner-friendly:** PythonAnywhere or Render.
+- **Want to learn servers:** A small VPS (e.g. DigitalOcean Droplet) with nginx + gunicorn.
+- **Already use a cloud provider:** That provider’s “run a container or Python app” product (e.g. Cloud Run, App Service).
+
+---
+
 ## Before you go live – checklist
 
 - [ ] **SECRET_KEY** is set in the host’s environment and is a long random value (not the default in `settings.py`).
