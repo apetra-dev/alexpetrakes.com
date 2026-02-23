@@ -58,6 +58,9 @@ coverage.xml
 .dmypy.json
 dmypy.json
 
+# Source assets (not for deployment)
+assets/
+
 
 
 
