@@ -1,3 +1,6 @@
+import socket
+import smtplib
+
 from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.contrib import messages
@@ -18,27 +21,64 @@ def home(request):
     return render(request, "main/home.html", context)
 
 
+def _email_configured():
+    """Check whether SMTP credentials are present."""
+    configured = bool(settings.EMAIL_HOST_USER and settings.EMAIL_HOST_PASSWORD)
+    if not configured:
+        logger.warning(
+            "Email credentials not configured "
+            "(EMAIL_HOST_USER=%r, EMAIL_HOST_PASSWORD=%s)",
+            settings.EMAIL_HOST_USER,
+            "***" if settings.EMAIL_HOST_PASSWORD else "<empty>",
+        )
+    return configured
+
+
 def contact(request):
     """Contact form handler; sends email and redirects to homepage contact section."""
-    logger.info("Contact page or form accessed")
+    logger.info(
+        "Contact view accessed - method=%s, remote=%s",
+        request.method,
+        request.META.get("REMOTE_ADDR", "unknown"),
+    )
 
     if request.method == "GET":
         return redirect(reverse("home") + "#contact")
 
     if request.method == "POST":
-        logger.info("Contact form submitted")
+        logger.info("Contact form submitted via POST")
         name = request.POST.get("name", "").strip()
         email = request.POST.get("email", "").strip()
         subject = request.POST.get("subject", "").strip()
         message_body = request.POST.get("message", "").strip()
 
-        logger.debug(
-            f"Form data received - Name: {name}, Email: {email}, Subject: {subject}"
+        logger.info(
+            "Form data received - Name: %s, Email: %s, Subject: %s, "
+            "Message length: %d",
+            name,
+            email,
+            subject,
+            len(message_body),
         )
 
         if not all([name, email, subject, message_body]):
             logger.warning("Contact form validation failed - missing fields")
             messages.error(request, "Please fill in all fields.")
+            return redirect(reverse("home") + "#contact")
+
+        if not _email_configured():
+            logger.error(
+                "Cannot send contact email - SMTP credentials not configured. "
+                "Submission from %s (%s): %s",
+                name,
+                email,
+                subject,
+            )
+            messages.error(
+                request,
+                "Sorry, there was a problem sending your message. "
+                "Please try emailing me directly at apetrakes1@gmail.com.",
+            )
             return redirect(reverse("home") + "#contact")
 
         full_message = (
@@ -51,6 +91,12 @@ def contact(request):
         )
 
         try:
+            logger.info(
+                "Attempting to send email via %s:%s (timeout=%ss)",
+                settings.EMAIL_HOST,
+                settings.EMAIL_PORT,
+                getattr(settings, "EMAIL_TIMEOUT", "none"),
+            )
             send_mail(
                 subject=f"[alexpetrakes.com] {subject}",
                 message=full_message,
@@ -58,13 +104,31 @@ def contact(request):
                 recipient_list=[settings.CONTACT_EMAIL],
                 fail_silently=False,
             )
-            logger.info(f"Contact email sent successfully - from {name} ({email})")
+            logger.info("Contact email sent successfully - from %s (%s)", name, email)
             messages.success(
                 request,
                 "Thank you for your message! I'll get back to you soon.",
             )
+        except (socket.timeout, socket.gaierror) as exc:
+            logger.error(
+                "Network/timeout error sending contact email: %s - %s",
+                type(exc).__name__,
+                exc,
+            )
+            messages.error(
+                request,
+                "Sorry, there was a problem sending your message. "
+                "Please try emailing me directly at apetrakes1@gmail.com.",
+            )
+        except smtplib.SMTPAuthenticationError as exc:
+            logger.error("SMTP authentication failed: %s", exc)
+            messages.error(
+                request,
+                "Sorry, there was a problem sending your message. "
+                "Please try emailing me directly at apetrakes1@gmail.com.",
+            )
         except Exception:
-            logger.exception("Failed to send contact form email")
+            logger.exception("Unexpected error sending contact form email")
             messages.error(
                 request,
                 "Sorry, there was a problem sending your message. "
@@ -73,4 +137,5 @@ def contact(request):
 
         return redirect(reverse("home") + "#contact")
 
+    logger.warning("Contact view hit with unsupported method: %s", request.method)
     return redirect(reverse("home") + "#contact")
