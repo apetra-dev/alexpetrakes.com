@@ -1181,8 +1181,8 @@ body.menu-open {
 
     .hero-section {
         min-height: auto;
-        padding-top: 4rem;
-        padding-bottom: 6rem;
+        padding-top: 1rem;
+        padding-bottom: 10rem;
     }
 
     .hero-container {
