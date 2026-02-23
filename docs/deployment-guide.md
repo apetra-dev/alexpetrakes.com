@@ -54,6 +54,8 @@ git push -u origin main
 |-----|--------|
 | `SECRET_KEY` | A long random string (e.g. generate one: `python -c "import secrets; print(secrets.token_urlsafe(50))"`) |
 | `DEBUG` | `False` |
+| `EMAIL_HOST_USER` | Your Gmail address (e.g. `apetrakes1@gmail.com`) |
+| `EMAIL_HOST_PASSWORD` | A Gmail **App Password** (not your regular password — see [Google App Passwords](https://myaccount.google.com/apppasswords)) |
 
 6. Click **Create Web Service**. Render will build and deploy. You’ll get a URL like `https://alexpetrakes-com.onrender.com`.
 
@@ -72,7 +74,7 @@ Where you registered **alexpetrakes.com** (e.g. Namecheap, Google Domains, Cloud
 
 - Add an **A record**:
   - **Host:** `@` (or leave blank for “root”)
-  - **Value / Points to:** Render’s IP (Render shows this in Custom Domains; often `216.24.57.1` or similar—**use the value Render gives you**).
+  - **Value / Points to:** Render’s IP (Render shows this in Custom Domains; often `216.24.57.1` or similar - **use the value Render gives you**).
 
 **For www (www.alexpetrakes.com):**
 
@@ -133,6 +135,7 @@ Besides **Render** and **PythonAnywhere**, you can use any of these. Same idea: 
 
 - [ ] **SECRET_KEY** is set in the host’s environment and is a long random value (not the default in `settings.py`).
 - [ ] **DEBUG** is `False` in production.
+- [ ] **EMAIL_HOST_USER** and **EMAIL_HOST_PASSWORD** are set for contact form emails (Gmail App Password).
 - [ ] Code is in a Git repo and the host deploys from it.
 - [ ] **Build command** runs `pip install -r requirements.txt` and `python manage.py collectstatic --noinput`.
 - [ ] **Start command** is `gunicorn alexpetrakes_site.wsgi:application`.
