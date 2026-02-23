@@ -135,7 +135,7 @@ body {
     display: flex;
     align-items: center;
     position: relative;
-    overflow-x: hidden; /* allow vertical overflow so full photo (top of head) is not clipped */
+    overflow-x: clip;
     background: var(--bg-primary);
 }
 
@@ -252,6 +252,21 @@ body {
     border-color: var(--accent);
     color: var(--accent);
     transform: translateY(-3px);
+}
+
+@media (min-width: 769px) {
+    .hero-container {
+        zoom: 0.9;
+    }
+
+    .orange-background-box {
+        top: 5%;
+        bottom: 15%;
+    }
+
+    .hero-photo {
+        bottom: 15%;
+    }
 }
 
 .hero-main-image {
