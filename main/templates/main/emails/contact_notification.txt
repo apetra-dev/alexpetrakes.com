@@ -1,0 +1,9 @@
+New contact form submission from alexpetrakes.com
+==================================================
+
+Name:    {{ name }}
+Email:   {{ email }}
+Subject: {{ subject }}
+
+Message:
+{{ message }}
