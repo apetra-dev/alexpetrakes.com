@@ -170,6 +170,6 @@ def verify_contact(request, token):
 
     messages.success(
         request,
-        "Your email has been verified and your message has been sent! I'll get back to you soon.",
+        "Email confirmed! I'll get back to you shortly.",
     )
     return redirect(reverse("home") + "#contact")

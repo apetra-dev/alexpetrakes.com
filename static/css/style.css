@@ -1030,9 +1030,9 @@ a.contact-method-item {
 }
 
 .alert-success {
-    background: rgba(232, 168, 56, 0.1);
-    border-color: var(--accent);
-    color: var(--accent);
+    background: rgba(52, 168, 83, 0.12);
+    border-color: #34a853;
+    color: #34a853;
 }
 
 .alert-error {
