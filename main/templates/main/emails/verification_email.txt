@@ -1,0 +1,13 @@
+Hi {{ name }},
+
+Thanks for reaching out through alexpetrakes.com!
+
+To confirm your message was sent by you and deliver it, please verify your email address by clicking the link below:
+
+{{ verify_url }}
+
+This link expires in 24 hours.
+
+If you did not submit a message through alexpetrakes.com, you can safely ignore this email.
+
+— Alex Petrakes
