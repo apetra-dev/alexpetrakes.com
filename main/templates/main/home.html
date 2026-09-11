@@ -2,243 +2,190 @@
 {% load static %}
 
 {% block content %}
-<section class="hero-section" id="home">
-    <div class="hero-container">
-        <div class="orange-background-box"></div>
-        
-        <div class="hero-text-box">
-            <h1 class="hero-name-full">
-                <span class="hero-first-name">Alex</span>
-                <span class="hero-last-name">Petrakes</span>
-            </h1>
-            <div class="hero-divider"></div>
-            <p class="hero-role">
-                <span>Full-Stack <span class="hero-role-software">Software </span>Engineer</span><br>
-                <span>Web App Developer</span>
-            </p>
-            
-            <div class="hero-social">
-                <a href="https://github.com/apetra-dev" target="_blank" rel="noopener noreferrer" class="social-icon" aria-label="GitHub">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
-                </a>
-                <a href="https://www.linkedin.com/in/apetrakes/" target="_blank" rel="noopener noreferrer" class="social-icon" aria-label="LinkedIn">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
-                </a>
-                <a href="mailto:apetrakes1@gmail.com" class="social-icon" aria-label="Email">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
-                </a>
+    <section id="home" class="at-hero">
+        <div class="at-hero__copy">
+            <p class="at-label">Full-stack software engineer</p>
+            <h1 class="at-hero__name">Alex Petrakes</h1>
+            <p class="at-hero__lede">I build data-intensive web applications and the infrastructure behind them, for work where correctness is non-negotiable.</p>
+            <div class="at-hero__actions">
+                <a href="#projects" class="at-btn">See the work</a>
+                <a href="#contact" class="at-link">Get in touch <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
             </div>
+            <dl class="at-hero__meta">
+                <div><dt>Based in</dt><dd>Annapolis, Maryland</dd></div>
+                <div><dt>Stack</dt><dd>Python, Django, Vue, PostgreSQL, AWS</dd></div>
+                <div><dt>Currently</dt><dd>Building a loan origination platform for reverse mortgages</dd></div>
+            </dl>
         </div>
-        
-        <div class="hero-photo">
-            <img src="{% static 'images/profile-hero-backup-2.png' %}" alt="Alex Petrakes" class="hero-main-image" id="heroImage">
-        </div>
-    </div>
-</section>
+        <figure class="at-hero__photo">
+            <img src="{% static 'images/hero-mountain.jpg' %}" alt="Alex Petrakes on a mountain above an alpine lake, arms spread" fetchpriority="high">
+            <figcaption>Off the clock</figcaption>
+        </figure>
+    </section>
 
-<section class="about-section" id="about">
-    <div class="about-container">
-        <div class="about-content-grid">
-            <div class="about-image-col">
-                <div class="about-photo-wrapper">
-                    <img src="{% static 'images/about-profile.png' %}" alt="Alex Petrakes" class="about-photo">
-                </div>
+    <section id="about" class="at-section">
+        <h2 class="at-h2">About</h2>
+        <div class="at-about">
+            <div class="at-about__text">
+                <p class="at-about__lead">I am a software engineer focused on building data-intensive web applications and the infrastructure that supports them.</p>
+                <p>My work centers on translating complex, often ambiguous requirements into deterministic, maintainable systems, where behavior is explicit, testable, and resilient to edge cases. By deterministic, I mean systems whose outputs are predictable and formally constrained rather than emergent or fragile.</p>
+                <p>I operate across the full stack, from application logic and data modeling to deployment pipelines and production diagnostics, with a strong emphasis on correctness, observability, and long-term maintainability. I am most effective in domains where precision matters: data pipelines, financial or compliance-adjacent systems, and integrations with external partners.</p>
+                <p class="at-about__close">If you are building something where correctness and data integrity are non-negotiable, we will likely work well together.</p>
             </div>
-            <div class="about-text-col">
-                <h2 class="about-heading">About Me</h2>
-                <p class="about-description">
-                    I am a software engineer focused on building data-intensive web applications and the infrastructure that supports them. My work centers on translating complex, often ambiguous requirements into deterministic, maintainable systems - where behavior is explicit, testable, and resilient to edge cases. By deterministic, I mean systems whose outputs are predictable and formally constrained rather than emergent or fragile.
-                </p>
-                <p class="about-description">
-                    I operate comfortably across the full stack, from application logic and data modeling to deployment pipelines and production diagnostics, with a strong emphasis on correctness, observability, and long-term maintainability. I am most effective in domains where precision matters: data pipelines, financial or compliance-adjacent systems, and integrations with external partners. If you are building something where correctness and data integrity are non-negotiable, we will likely work well together.
-                </p>
-            </div>
+            <aside class="at-about__side">
+                <div class="headshot-slot" style="--slot: 120px"><img src="{% static 'images/headshot.jpg' %}" alt="Alex Petrakes" loading="lazy"><span>Headshot</span></div>
+                <h3 class="at-label at-side__title">Strongest in</h3>
+                <ul class="at-list">
+                    <li>Data pipelines and export normalization</li>
+                    <li>Financial and compliance-adjacent systems</li>
+                    <li>Integrations with external partners</li>
+                    <li>Production diagnostics and observability</li>
+                </ul>
+            </aside>
         </div>
-    </div>
-</section>
+    </section>
 
-<section class="page-section" id="projects">
-    <div class="projects-container">
-        <div class="page-header">
-            <h1 class="page-title">Projects</h1>
-            <p class="page-subtitle">A showcase of my work and creations</p>
-        </div>
-
-        <div class="projects-grid">
-            <div class="project-card project-card--featured">
-                <span class="project-label">Flagship Project</span>
-                <h3 class="project-card-title">Reverse LOS (Loan Origination System)</h3>
-                <p class="project-card-desc">
-                    A full-stack loan origination platform supporting complex mortgage products and investor servicing. Built with a Django backend and Vue frontend, the system provides a unified workspace for managing pipelines, documents, calculations, and configuration, while the backend functions as the system of record enforcing permissions, modeling organizational hierarchies, generating reports, and integrating with external services.
-                </p>
-                <div class="project-ai-integrations">
-                    <h4 class="project-ai-heading">AI Integrations</h4>
-                    <ul class="project-ai-list">
-                        <li>
-                            <span class="ai-item-title">Loan Chatbot Assistant</span>
-                            <span class="ai-item-desc">Conversational interface with streaming SSE responses, full loan context injection, multi-thread support, and per-tenant model configuration</span>
-                        </li>
-                        <li>
-                            <span class="ai-item-title">Document Categorization</span>
-                            <span class="ai-item-desc">Auto-classifies uploaded PDFs against document tags with confidence scoring and splits multi-page packages via parallel page-level analysis</span>
-                        </li>
-                        <li>
-                            <span class="ai-item-title">Payoff Extraction</span>
-                            <span class="ai-item-desc">Pulls structured payoff data from PDFs and diffs it against existing records in the system</span>
-                        </li>
-                        <li>
-                            <span class="ai-item-title">Invoice Matching</span>
-                            <span class="ai-item-desc">Matches PDF invoices to loan fees by HUD line number, automating the fee reconciliation process</span>
-                        </li>
-                    </ul>
-                </div>
-                <ul class="project-tags">
-                    <li>Business-Rule Engines</li>
-                    <li>AI Document Processing</li>
-                    <li>LLM Integration</li>
-                    <li>Investor Exports</li>
+    <section id="projects" class="at-section">
+        <h2 class="at-h2">Selected work</h2>
+        <article class="at-flagship">
+            <div class="at-flagship__main">
+                <p class="at-label at-label--navy">Flagship</p>
+                <h3>ReversePilot</h3>
+                <p class="at-sub">Loan origination system for reverse mortgages</p>
+                <p class="at-desc">ReversePilot is a full-stack loan origination platform supporting complex mortgage products and investor servicing. Built with a Django backend and Vue frontend, the system provides a unified workspace for managing pipelines, documents, calculations, and configuration, while the backend functions as the system of record: enforcing permissions, modeling organizational hierarchies, generating reports, and integrating with external services. It also owns the outbound side: servicer tapes and investor exports built to partner specifications, with deterministic formatting and validation to stop silent data drift.</p>
+                <ul class="at-tags">
+                    <li>Business-rule engines</li>
+                    <li>AI document processing</li>
+                    <li>LLM integration</li>
+                    <li>Investor exports</li>
                     <li>Observability</li>
                 </ul>
+                <p class="at-entry__link"><a href="https://reversepilot.com" target="_blank" rel="noopener noreferrer">reversepilot.com</a></p>
             </div>
-
-            <div class="project-card">
-                <h3 class="project-card-title">CMECs Database</h3>
-                <p class="project-card-desc">
-                    A relational database system for evaluating university course equivalencies for transfer students. Replaced a manual advising process with a structured, queryable data model that improved accuracy and throughput.
-                </p>
-                <ul class="project-tags">
-                    <li>Relational Modeling</li>
-                    <li>Academic Advising</li>
-                    <li>Process Automation</li>
-                </ul>
+            <div class="at-flagship__ai">
+                <h4 class="at-label">AI integrations</h4>
+                <dl class="at-ai">
+                    <div><dt>Loan chatbot assistant</dt><dd>Conversational interface with streaming SSE responses, full loan context injection, multi-thread support, and per-tenant model configuration.</dd></div>
+                    <div><dt>Document categorization</dt><dd>Auto-classifies uploaded PDFs against document tags with confidence scoring and splits multi-page packages via parallel page-level analysis.</dd></div>
+                    <div><dt>Payoff extraction</dt><dd>Pulls structured payoff data from PDFs and diffs it against existing records in the system.</dd></div>
+                    <div><dt>Invoice matching</dt><dd>Matches PDF invoices to loan fees by HUD line number, automating fee reconciliation.</dd></div>
+                </dl>
             </div>
-
-            <div class="project-card">
-                <h3 class="project-card-title">Automation Workflows</h3>
-                <p class="project-card-desc">
-                    Batch email orchestration and cloud-based automation flows driven by structured spreadsheet inputs. Reduced manual outreach overhead and enforced consistency across high-volume advisor communications.
-                </p>
-                <ul class="project-tags">
-                    <li>Power Automate</li>
-                    <li>Event-Driven</li>
-                    <li>Cloud Integration</li>
-                </ul>
-            </div>
-
-            <div class="project-card">
-                <h3 class="project-card-title">Data Pipelines &amp; Export Normalization</h3>
-                <p class="project-card-desc">
-                    Structured export pipelines aligning internal data representations with external partner specifications. Focused on schema alignment, deterministic formatting, and reducing silent data drift between systems.
-                </p>
-                <ul class="project-tags">
-                    <li>Schema Alignment</li>
-                    <li>Validation</li>
-                    <li>Servicer Integrations</li>
-                </ul>
-            </div>
-
-            <div class="project-card">
-                <h3 class="project-card-title">Web Calculators &amp; Decision Engines</h3>
-                <p class="project-card-desc">
-                    Rule-driven calculators and decision-support tools for financial products. Emphasizes transparency of logic, auditability of outputs, and deterministic rounding across user-facing and backend pipelines.
-                </p>
-                <ul class="project-tags">
-                    <li>Rule Engines</li>
-                    <li>Pricing &amp; Eligibility</li>
-                    <li>Edge-Case Handling</li>
-                </ul>
-            </div>
-
-        </div>
-
-        <div class="projects-bridge">
-            <p class="projects-bridge-text">Have a project in mind?</p>
-            <a href="#contact" class="projects-bridge-link">Let's talk →</a>
-        </div>
-    </div>
-</section>
-
-<section class="contact-section" id="contact">
-    <div class="contact-container">
-        <div class="contact-header">
-            <h1 class="contact-title">Get In Touch</h1>
-            <p class="contact-subtitle">Let's start a conversation</p>
-        </div>
-
-        {% if messages %}
-            <div class="messages">
-                {% for message in messages %}
-                    <div class="alert alert-{{ message.tags }}">
-                        {{ message }}
-                    </div>
-                {% endfor %}
-            </div>
-        {% endif %}
-
-        <div class="contact-content-wrapper">
-            <div class="contact-info-side">
-                <h2>Connect</h2>
-                <p class="contact-description">
-                    I'm always open to discussing new projects, creative ideas, or
-                    opportunities to be part of your vision. Feel free to reach out!
-                </p>
-
-                <div class="contact-methods-list">
-                    <a href="mailto:apetrakes1@gmail.com" class="contact-method-item">
-                        <div class="method-icon">📧</div>
-                        <div class="method-details">
-                            <h3>Email</h3>
-                            <p>apetrakes1@gmail.com</p>
-                        </div>
-                    </a>
-
-                    <a href="https://www.linkedin.com/in/apetrakes/" target="_blank" rel="noopener noreferrer" class="contact-method-item">
-                        <div class="method-icon">💼</div>
-                        <div class="method-details">
-                            <h3>LinkedIn</h3>
-                            <p>Connect with me</p>
-                        </div>
-                    </a>
-
-                    <a href="https://github.com/apetra-dev" target="_blank" rel="noopener noreferrer" class="contact-method-item">
-                        <div class="method-icon">🐙</div>
-                        <div class="method-details">
-                            <h3>GitHub</h3>
-                            <p>Check out my code</p>
-                        </div>
-                    </a>
+        </article>
+        <div class="at-list">
+            <details class="at-entry" open>
+                <summary>
+                    <span class="at-entry__title">Atlas Address<span class="at-status at-status--live">Live</span></span>
+                    <span class="at-entry__oneliner">Property intelligence platform over a 140-million-record parcel database.</span>
+                    <span class="at-entry__meta"><span class="at-entry__tags">FastAPI &middot; React &middot; PostgreSQL &middot; Snowflake</span><svg class="at-entry__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></span>
+                </summary>
+                <div class="at-entry__body">
+                    <p>A search, valuation, and reporting product for real estate, title, and lending professionals. A FastAPI backend and React frontend sit on a PostgreSQL store of more than 140 million property records, kept current by a Snowflake ETL, with Redis caching in front of the hot paths.</p>
+                    <ul class="at-entry__points">
+                        <li>Property reports rendered server-side as vector PDFs, co-branded for partner firms</li>
+                        <li>Free-report lead funnel with bot protection that creates CRM accounts automatically</li>
+                        <li>Ownership, sale, and deed history pulled from the source data</li>
+                        <li>Index and connection-pool tuning so a single VPS serves the full dataset</li>
+                    </ul>
+                    <p class="at-entry__link"><a href="https://atlasaddress.com" target="_blank" rel="noopener noreferrer">atlasaddress.com</a></p>
                 </div>
-            </div>
-
-            <div class="contact-form-side">
-                <form class="contact-form" method="post" action="{% url 'contact' %}">
-                    {% csrf_token %}
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="name">Name</label>
-                            <input type="text" id="name" name="name" required>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="email">Email</label>
-                            <input type="email" id="email" name="email" required>
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="subject">Subject</label>
-                        <input type="text" id="subject" name="subject" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="message">Message</label>
-                        <textarea id="message" name="message" rows="6" required></textarea>
-                    </div>
-
-                    <button type="submit" class="btn-submit">Send Message</button>
-                </form>
-            </div>
+            </details>
+            <details class="at-entry">
+                <summary>
+                    <span class="at-entry__title">Demand Signatures<span class="at-status at-status--live">Live</span></span>
+                    <span class="at-entry__oneliner">Document e-signing platform built from scratch: upload, place fields, route, sign, audit.</span>
+                    <span class="at-entry__meta"><span class="at-entry__tags">Django REST &middot; Vue 3 &middot; PostgreSQL &middot; Stripe</span><svg class="at-entry__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></span>
+                </summary>
+                <div class="at-entry__body">
+                    <p>A DocuSign-style platform built from the ground up so the company owns it outright. Senders upload PDFs, place fields, and route them to signers; recipients sign on any device; every action lands in an audit trail. A Django REST backend and a Vue 3 frontend with per-organization tenancy.</p>
+                    <ul class="at-entry__points">
+                        <li>Signing groups and multi-party routing with configurable order</li>
+                        <li>Automatic field detection on scanned forms</li>
+                        <li>Completion webhooks that push signed documents back into ReversePilot</li>
+                        <li>Metered signing fees and billing shipped dark behind feature flags</li>
+                    </ul>
+                    <p class="at-entry__link"><a href="https://demandsignatures.com" target="_blank" rel="noopener noreferrer">demandsignatures.com</a></p>
+                </div>
+            </details>
+            <details class="at-entry">
+                <summary>
+                    <span class="at-entry__title">LaneLogi<span class="at-status at-status--in-development">In development</span></span>
+                    <span class="at-entry__oneliner">Freight logistics platform: shipper TMS, carrier marketplace, and bidding portal.</span>
+                    <span class="at-entry__meta"><span class="at-entry__tags">Django &middot; HTMX &middot; Celery &middot; Render</span><svg class="at-entry__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></span>
+                </summary>
+                <div class="at-entry__body">
+                    <p>A two-sided logistics platform where shippers manage loads and lanes, carriers and brokers bid on spot loads, and awards close the cycle. Django with HTMX for the interactive surfaces, Celery for background work, deployed on Render. Still in development.</p>
+                    <ul class="at-entry__points">
+                        <li>Role-based authorization across shippers, carriers, and brokers</li>
+                        <li>Bidder portal with open, submitted, and closed load views and an award flow</li>
+                        <li>Quotes, tenders, and awards tracked as one auditable cycle</li>
+                    </ul>
+                </div>
+            </details>
+            <details class="at-entry">
+                <summary>
+                    <span class="at-entry__title">Web Calculators and Decision Engines</span>
+                    <span class="at-entry__oneliner">Rule-driven calculators and decision-support tools for financial products.</span>
+                    <span class="at-entry__meta"><span class="at-entry__tags">Rule engines &middot; Pricing and eligibility &middot; Edge-case handling</span><svg class="at-entry__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></span>
+                </summary>
+                <div class="at-entry__body">
+                    <p>Rule-driven calculators and decision-support tools for financial products. Emphasizes transparency of logic, auditability of outputs, and deterministic rounding across user-facing and backend pipelines.</p>
+                </div>
+            </details>
+            <details class="at-entry">
+                <summary>
+                    <span class="at-entry__title">CMECs Database</span>
+                    <span class="at-entry__oneliner">Course-equivalency database for transfer-student advising.</span>
+                    <span class="at-entry__meta"><span class="at-entry__tags">Relational modeling &middot; Academic advising &middot; Process automation</span><svg class="at-entry__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></span>
+                </summary>
+                <div class="at-entry__body">
+                    <p>A relational database system for evaluating university course equivalencies for transfer students. Replaced a manual advising process with a structured, queryable data model that improved accuracy and throughput.</p>
+                </div>
+            </details>
         </div>
-    </div>
-</section>
+    </section>
+
+    <section id="contact" class="at-section">
+        <h2 class="at-h2">Get in touch</h2>
+        {% if messages %}
+        <div class="at-alerts">
+            {% for message in messages %}
+            <div class="at-alert at-alert--{{ message.tags }}">{{ message }}</div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        <div class="at-contact">
+            <div class="at-contact__info">
+                <p>For projects, roles, or a second opinion on a hard data problem. Email is the fastest way to reach me; the form goes to the same inbox.</p>
+                <dl class="at-methods">
+                    <div><dt>Email</dt><dd><a href="mailto:apetrakes1@gmail.com">apetrakes1@gmail.com</a></dd></div>
+                    <div><dt>LinkedIn</dt><dd><a href="https://www.linkedin.com/in/apetrakes/" target="_blank" rel="noopener noreferrer">linkedin.com/in/apetrakes</a></dd></div>
+                    <div><dt>GitHub</dt><dd><a href="https://github.com/apetra-dev" target="_blank" rel="noopener noreferrer">github.com/apetra-dev</a></dd></div>
+                </dl>
+                <div class="headshot-slot" style="--slot: 96px"><img src="{% static 'images/headshot.jpg' %}" alt="Alex Petrakes" loading="lazy"><span>Headshot</span></div>
+            </div>
+            <form class="at-form" method="post" action="{% url 'contact' %}" data-contact>
+                {% csrf_token %}
+                <div class="at-form__row">
+                    <div class="at-field">
+                        <label for="name">Name</label>
+                        <input type="text" id="name" name="name" required autocomplete="name">
+                    </div>
+                    <div class="at-field">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" name="email" required autocomplete="email">
+                    </div>
+                </div>
+                <div class="at-field">
+                    <label for="subject">Subject</label>
+                    <input type="text" id="subject" name="subject" required>
+                </div>
+                <div class="at-field">
+                    <label for="message">Message</label>
+                    <textarea id="message" name="message" rows="6" required></textarea>
+                </div>
+                <button type="submit" class="at-btn">Send message</button>
+            </form>
+        </div>
+    </section>
 {% endblock %}

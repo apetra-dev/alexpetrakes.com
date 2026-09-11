@@ -15,13 +15,9 @@ VERIFICATION_EXPIRY_HOURS = 24
 
 
 def home(request):
-    """Home page view with entrance animation and slow image reveal"""
+    """Single-page home: hero, about, selected work, contact."""
     logger.info("Home page accessed")
-    context = {
-        "title": "Alex Petrakes",
-        "body_class": "page-home",
-    }
-    return render(request, "main/home.html", context)
+    return render(request, "main/home.html", {"title": "Alex Petrakes"})
 
 
 def contact(request):
@@ -173,3 +169,4 @@ def verify_contact(request, token):
         "Your email has been verified and your message has been sent! I'll get back to you soon.",
     )
     return redirect(reverse("home") + "#contact")
+
