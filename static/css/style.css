@@ -121,6 +121,7 @@ img { max-width: 100%; display: block; }
 .at-ai dd { color: var(--ink-2); font-size: .95rem; margin-top: .2rem; }
 .at-list { border-top: 1px solid var(--ink); }
 .at-entry { border-bottom: 1px solid var(--rule); }
+.at-entry:last-child { border-bottom: 0; }
 .at-entry summary {
     list-style: none; cursor: pointer;
     display: grid; grid-template-columns: 240px minmax(0, 1fr) auto; gap: 2rem; align-items: baseline;
