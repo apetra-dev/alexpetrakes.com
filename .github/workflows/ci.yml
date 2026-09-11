@@ -1,0 +1,86 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  checks:
+    name: Django checks and tests
+    runs-on: ubuntu-latest
+    env:
+      SECRET_KEY: ci-only-not-a-real-secret
+      DEBUG: "False"
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: System check
+        run: python manage.py check
+
+      - name: Migrations are up to date
+        run: python manage.py makemigrations --check --dry-run
+
+      - name: Migrate
+        run: python manage.py migrate --noinput
+
+      - name: Tests
+        run: python manage.py test --noinput --verbosity 2
+
+      - name: Static files collect cleanly
+        run: python manage.py collectstatic --noinput
+
+  deploy:
+    name: Deploy to Render
+    needs: checks
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    concurrency:
+      group: render-deploy
+      cancel-in-progress: false
+    env:
+      RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}
+      RENDER_SERVICE_ID: ${{ secrets.RENDER_SERVICE_ID }}
+    steps:
+      - name: Trigger deploy
+        id: trigger
+        run: |
+          set -euo pipefail
+          response=$(curl -fsS -X POST "https://api.render.com/v1/services/${RENDER_SERVICE_ID}/deploys" \
+            -H "Authorization: Bearer ${RENDER_API_KEY}" \
+            -H "Content-Type: application/json" \
+            -d '{"clearCache":"do_not_clear"}')
+          deploy_id=$(printf '%s' "$response" | python3 -c 'import json,sys; print(json.load(sys.stdin)["id"])')
+          echo "Triggered deploy ${deploy_id} for ${GITHUB_SHA}"
+          echo "deploy_id=${deploy_id}" >> "$GITHUB_OUTPUT"
+
+      - name: Wait for deploy to go live
+        run: |
+          set -euo pipefail
+          deploy_id="${{ steps.trigger.outputs.deploy_id }}"
+          for i in $(seq 1 60); do
+            status=$(curl -fsS "https://api.render.com/v1/services/${RENDER_SERVICE_ID}/deploys/${deploy_id}" \
+              -H "Authorization: Bearer ${RENDER_API_KEY}" \
+              | python3 -c 'import json,sys; print(json.load(sys.stdin)["status"])')
+            echo "[$i] ${status}"
+            case "$status" in
+              live) echo "Deploy is live."; exit 0 ;;
+              build_failed|update_failed|canceled|deactivated|pre_deploy_failed)
+                echo "Deploy ended with status: ${status}"; exit 1 ;;
+            esac
+            sleep 15
+          done
+          echo "Timed out waiting for deploy ${deploy_id}"; exit 1
