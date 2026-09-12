@@ -7,3 +7,8 @@ Subject: {{ subject }}
 
 Message:
 {{ message }}
+
+
+About the sender
+==================================================
+{{ sender_report }}

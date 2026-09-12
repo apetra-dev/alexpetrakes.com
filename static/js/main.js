@@ -32,7 +32,33 @@
 
     var form = document.querySelector('form[data-contact]');
     if (form) {
+        var loadedAt = Date.now();
+        var setClient = function (name, value) {
+            var field = form.querySelector('[data-client="' + name + '"]');
+            if (field && value !== undefined && value !== null && value !== '') {
+                field.value = String(value).slice(0, 200);
+            }
+        };
+        var describe = function () {
+            try {
+                var tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+                setClient('timezone', tz);
+            } catch (e) { /* older engines */ }
+            setClient('utc_offset', -new Date().getTimezoneOffset());
+            setClient('languages', (navigator.languages || [navigator.language]).join(','));
+            setClient('screen', screen.width + 'x' + screen.height + '@' + (window.devicePixelRatio || 1));
+            setClient('viewport', window.innerWidth + 'x' + window.innerHeight);
+            var uaData = navigator.userAgentData;
+            setClient('platform', (uaData && uaData.platform) || navigator.platform || '');
+            setClient('touch', navigator.maxTouchPoints || 0);
+            if (window.matchMedia) {
+                setClient('color_scheme', window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+            }
+        };
+        describe();
+
         form.addEventListener('submit', function () {
+            setClient('dwell', Math.round((Date.now() - loadedAt) / 1000));
             var button = form.querySelector('button[type="submit"]');
             if (button) {
                 button.disabled = true;

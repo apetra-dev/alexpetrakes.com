@@ -178,6 +178,8 @@ img { max-width: 100%; display: block; }
 .at-field input:focus, .at-field textarea:focus { outline: none; border-color: var(--navy); box-shadow: 0 1px 0 0 var(--navy); }
 .at-field textarea { resize: vertical; min-height: 140px; }
 .at-form .at-btn { justify-self: start; }
+.at-form__note { margin: -.5rem 0 0; font-size: .8rem; color: var(--ink-3); max-width: 44ch; }
+.at-trap { position: absolute; left: -10000px; top: auto; width: 1px; height: 1px; overflow: hidden; }
 .at-alerts { margin-bottom: 2rem; display: grid; gap: .75rem; }
 .at-alert { padding: .9rem 1rem; border: 1px solid var(--rule); background: var(--stone-2); font-size: .95rem; }
 .at-alert--success { border-color: var(--navy); color: var(--navy); }

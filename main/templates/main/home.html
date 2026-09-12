@@ -166,6 +166,19 @@
             </div>
             <form class="at-form" method="post" action="{% url 'contact' %}" data-contact>
                 {% csrf_token %}
+                <div class="at-trap" aria-hidden="true">
+                    <label for="website">Website</label>
+                    <input type="text" id="website" name="website" tabindex="-1" autocomplete="off">
+                </div>
+                <input type="hidden" name="client_timezone" data-client="timezone">
+                <input type="hidden" name="client_utc_offset" data-client="utc_offset">
+                <input type="hidden" name="client_languages" data-client="languages">
+                <input type="hidden" name="client_screen" data-client="screen">
+                <input type="hidden" name="client_viewport" data-client="viewport">
+                <input type="hidden" name="client_platform" data-client="platform">
+                <input type="hidden" name="client_touch" data-client="touch">
+                <input type="hidden" name="client_color_scheme" data-client="color_scheme">
+                <input type="hidden" name="client_dwell" data-client="dwell">
                 <div class="at-form__row">
                     <div class="at-field">
                         <label for="name">Name</label>
@@ -185,6 +198,7 @@
                     <textarea id="message" name="message" rows="6" required></textarea>
                 </div>
                 <button type="submit" class="at-btn">Send message</button>
+                <p class="at-form__note">Submissions record your network address and browser details so I can filter abuse.</p>
             </form>
         </div>
     </section>
