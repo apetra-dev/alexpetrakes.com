@@ -94,14 +94,14 @@ class ContactViewTests(TestCase):
         self.client.post(
             reverse("contact"),
             data=data,
-            HTTP_X_FORWARDED_FOR="203.0.113.7, 10.0.0.1",
+            HTTP_X_FORWARDED_FOR="8.8.8.8, 10.0.0.1",
             HTTP_USER_AGENT="Mozilla/5.0 (Windows NT 10.0; Win64; x64) Firefox/130.0",
             HTTP_ACCEPT_LANGUAGE="de-DE,de;q=0.9",
         )
         pending = PendingContact.objects.get()
-        self.assertEqual(pending.submitted_ip, "203.0.113.7")
+        self.assertEqual(pending.submitted_ip, "8.8.8.8")
         meta = pending.submission_meta
-        self.assertEqual(meta["ip"], "203.0.113.7")
+        self.assertEqual(meta["ip"], "8.8.8.8")
         self.assertEqual(meta["headers"]["accept_language"], "de-DE,de;q=0.9")
         self.assertIn("Firefox", meta["headers"]["user_agent"])
         self.assertEqual(meta["client"]["timezone"], "Europe/Berlin")
@@ -186,9 +186,9 @@ class VerifyContactViewTests(TestCase):
     def test_notification_includes_sender_report(self, mock_send):
         pending = self._make_pending()
         PendingContact.objects.filter(pk=pending.pk).update(
-            submitted_ip="203.0.113.7",
+            submitted_ip="8.8.8.8",
             submission_meta={
-                "ip": "203.0.113.7",
+                "ip": "8.8.8.8",
                 "headers": {
                     "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36",
                     "accept_language": "en-US,en;q=0.9",
@@ -200,20 +200,20 @@ class VerifyContactViewTests(TestCase):
         )
         self.client.get(
             reverse("verify_contact", kwargs={"token": pending.id}),
-            HTTP_X_FORWARDED_FOR="198.51.100.9",
+            HTTP_X_FORWARDED_FOR="1.1.1.1",
             HTTP_USER_AGENT="Mozilla/5.0 (iPhone; CPU iPhone OS 17_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Mobile/15E148 Safari/604.1",
         )
         body = mock_send.call_args.kwargs["message"]
         self.assertIn("About the sender", body)
-        self.assertIn("203.0.113.7", body)
+        self.assertIn("8.8.8.8", body)
         self.assertIn("Chrome 128 on macOS 10.15.7 (desktop)", body)
         self.assertIn("America/New_York", body)
         self.assertIn("linkedin.com", body)
-        self.assertIn("198.51.100.9", body)
+        self.assertIn("1.1.1.1", body)
         self.assertIn("Safari 17.5 on iOS 17.5 (phone)", body)
         self.assertIn("different address", body)
         pending.refresh_from_db()
-        self.assertEqual(pending.verified_ip, "198.51.100.9")
+        self.assertEqual(pending.verified_ip, "1.1.1.1")
 
     @patch("main.views.send_mail")
     def test_report_failure_does_not_block_delivery(self, mock_send):
@@ -274,13 +274,13 @@ class SenderIntelTests(TestCase):
 
     def test_client_ip_prefers_cloudflare_header(self):
         request = self.factory.get(
-            "/", HTTP_CF_CONNECTING_IP="203.0.113.7", HTTP_X_FORWARDED_FOR="198.51.100.1"
+            "/", HTTP_CF_CONNECTING_IP="8.8.8.8", HTTP_X_FORWARDED_FOR="1.1.1.1"
         )
-        self.assertEqual(sender_intel.client_ip(request), "203.0.113.7")
+        self.assertEqual(sender_intel.client_ip(request), "8.8.8.8")
 
     def test_client_ip_skips_private_forwarded_hops(self):
-        request = self.factory.get("/", HTTP_X_FORWARDED_FOR="10.1.2.3, 203.0.113.7, 172.16.0.1")
-        self.assertEqual(sender_intel.client_ip(request), "203.0.113.7")
+        request = self.factory.get("/", HTTP_X_FORWARDED_FOR="10.1.2.3, 8.8.8.8, 172.16.0.1")
+        self.assertEqual(sender_intel.client_ip(request), "8.8.8.8")
 
     def test_client_ip_falls_back_to_remote_addr(self):
         request = self.factory.get("/", HTTP_X_FORWARDED_FOR="not-an-ip")
@@ -341,9 +341,9 @@ class SenderIntelTests(TestCase):
     def test_build_report_signals(self):
         pending = PendingContact.objects.create(
             name="Anon", email="throwaway@mailinator.com", subject="Hi", message="Body",
-            submitted_ip="203.0.113.7",
+            submitted_ip="8.8.8.8",
             submission_meta={
-                "ip": "203.0.113.7",
+                "ip": "8.8.8.8",
                 "headers": {"user_agent": "Mozilla/5.0 (Windows NT 10.0) Chrome/128.0.0.0 Safari/537.36"},
                 "client": {"timezone": "America/Chicago", "dwell": "3"},
                 "session": {},
@@ -352,7 +352,7 @@ class SenderIntelTests(TestCase):
         )
         PendingContact.objects.create(
             name="Someone Else", email="other@example.com", subject="Earlier", message="Body",
-            submitted_ip="203.0.113.7", submission_meta={"ip": "203.0.113.7"},
+            submitted_ip="8.8.8.8", submission_meta={"ip": "8.8.8.8"},
         )
         geo = {
             "country": "Netherlands", "regionName": "North Holland", "city": "Amsterdam",

@@ -379,7 +379,7 @@ def _describe_ip(ip, geo, ptr):
     if not ip:
         return "unknown"
     if not _is_public(ip):
-        return f"{ip} (private/local address)"
+        return f"{ip} (not a public address)"
     parts = [ip]
     if geo:
         place = ", ".join(p for p in (geo.get("city"), geo.get("regionName"), geo.get("country")) if p)
