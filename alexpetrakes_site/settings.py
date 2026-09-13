@@ -149,3 +149,16 @@ EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD", "")
 EMAIL_TIMEOUT = int(os.environ.get("EMAIL_TIMEOUT", 10))
 DEFAULT_FROM_EMAIL = os.environ.get("DEFAULT_FROM_EMAIL", "apetrakes1@gmail.com")
 CONTACT_EMAIL = "apetrakes1@gmail.com"
+
+# Contact form sender intelligence. When a verified message is delivered, the
+# notification email carries a report on the sender: IP geolocation/ownership,
+# reverse DNS, browser and locale, how they arrived, email-domain class, and
+# repeat-sender matches. Lookups are best-effort with a hard timeout.
+SENDER_INTEL_ENABLED = os.environ.get("SENDER_INTEL_ENABLED", "True") == "True"
+SENDER_INTEL_TIMEOUT = float(os.environ.get("SENDER_INTEL_TIMEOUT", 4))
+# ip-api.com: free for non-commercial use, 45 req/min, HTTP only on the free tier.
+SENDER_INTEL_GEO_URL = os.environ.get(
+    "SENDER_INTEL_GEO_URL",
+    "http://ip-api.com/json/{ip}?fields=status,message,country,regionName,city,zip,"
+    "lat,lon,timezone,isp,org,as,asname,mobile,proxy,hosting",
+)
