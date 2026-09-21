@@ -409,3 +409,30 @@ class LinksPageTests(TestCase):
         response = self.client.get(reverse("links"))
         self.assertContains(response, "at-status--live")
         self.assertContains(response, "at-status--in-development")
+
+
+class AnalyticsTests(TestCase):
+    def test_no_tracker_script_when_unconfigured(self):
+        with override_settings(UMAMI_WEBSITE_ID=""):
+            for name in ("home", "links"):
+                self.assertNotContains(self.client.get(reverse(name)), "data-website-id")
+
+    def test_tracker_script_on_every_page_when_configured(self):
+        with override_settings(UMAMI_WEBSITE_ID="site-123"):
+            for name in ("home", "links"):
+                self.assertContains(
+                    self.client.get(reverse(name)),
+                    '<script defer src="https://cloud.umami.is/script.js" '
+                    'data-website-id="site-123"></script>',
+                )
+
+    def test_every_link_row_reports_a_named_tap_event(self):
+        from .views import LINK_SECTIONS
+
+        response = self.client.get(reverse("links"))
+        for section in LINK_SECTIONS:
+            for link in section["links"]:
+                self.assertContains(
+                    response,
+                    f'data-umami-event="Link tap" data-umami-event-link="{link["title"]}"',
+                )

@@ -71,6 +71,7 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
+                "main.context_processors.analytics",
             ],
         },
     },
@@ -162,3 +163,8 @@ SENDER_INTEL_GEO_URL = os.environ.get(
     "http://ip-api.com/json/{ip}?fields=status,message,country,regionName,city,zip,"
     "lat,lon,timezone,isp,org,as,asname,mobile,proxy,hosting",
 )
+
+# Visitor analytics (Umami). The tracker script is only rendered when a website
+# id is set, so local, CI, and any unconfigured environment send nothing.
+UMAMI_WEBSITE_ID = os.environ.get("UMAMI_WEBSITE_ID", "")
+UMAMI_SCRIPT_URL = os.environ.get("UMAMI_SCRIPT_URL", "https://cloud.umami.is/script.js")
