@@ -195,6 +195,24 @@ img { max-width: 100%; display: block; }
 .at-footer__links a { text-decoration: none; color: var(--ink-3); }
 .at-footer__links a:hover { color: var(--ink); }
 
+/* Links page (/links/, the link-in-bio page) -------------------- */
+.at-links { width: min(560px, 100% - 2.5rem); margin: 0 auto; padding: 3.5rem 0 2.5rem; }
+.at-links__head { display: flex; flex-direction: column; align-items: flex-start; }
+.at-links__name { font-family: var(--font-display); font-weight: var(--display-weight); font-size: calc(clamp(2.6rem, 11vw, 3.4rem) * var(--display-scale)); line-height: 1; letter-spacing: var(--display-tracking); margin: 1.5rem 0 .7rem; }
+.at-links__lede { color: var(--ink-2); margin-top: 1rem; max-width: 42ch; text-wrap: pretty; }
+.at-links__section { margin-top: 2.75rem; }
+.at-links__label { padding-bottom: .6rem; border-bottom: 1px solid var(--ink); }
+.at-links__row { display: flex; align-items: center; justify-content: space-between; gap: 1.25rem; min-height: 64px; padding: 1.05rem 0; border-bottom: 1px solid var(--rule); text-decoration: none; }
+.at-links__text { display: flex; flex-direction: column; gap: .2rem; min-width: 0; }
+.at-links__title { font-family: var(--font-display); font-weight: var(--display-weight); font-size: calc(1.35rem * var(--display-scale)); letter-spacing: var(--display-tracking); line-height: 1.15; transition: color .2s; }
+.at-links__note { color: var(--ink-2); font-size: .95rem; line-height: 1.4; }
+.at-links__url { font-size: .72rem; letter-spacing: .12em; text-transform: uppercase; color: var(--ink-3); font-weight: 600; margin-top: .15rem; overflow-wrap: anywhere; }
+.at-links__arrow { width: 18px; height: 18px; flex: none; color: var(--ink-3); transition: color .2s, transform .2s; }
+.at-links__row:hover .at-links__title, .at-links__row:focus-visible .at-links__title { color: var(--navy); }
+.at-links__row:hover .at-links__arrow, .at-links__row:focus-visible .at-links__arrow { color: var(--navy); transform: translate(2px, -2px); }
+.at-links__foot { margin-top: 2.5rem; font-size: .88rem; color: var(--ink-3); }
+@media (prefers-reduced-motion: reduce) { .at-links__arrow { transition: none; } }
+
 /* Motion ------------------------------------------------------ */
 @media (prefers-reduced-motion: no-preference) {
     .at-hero__copy > * { animation: at-rise .8s cubic-bezier(.2, .7, .2, 1) both; }

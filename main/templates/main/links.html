@@ -1,0 +1,57 @@
+{% load static %}<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Alex Petrakes, full-stack software engineer. The applications I build and where to find me.">
+    <meta property="og:type" content="profile">
+    <meta property="og:title" content="Alex Petrakes">
+    <meta property="og:description" content="Full-stack software engineer. The applications I build and where to find me.">
+    <meta property="og:url" content="{{ request.build_absolute_uri }}">
+    <meta property="og:image" content="{{ request.scheme }}://{{ request.get_host }}{% static 'images/headshot.jpg' %}">
+    <meta name="twitter:card" content="summary">
+    <title>{{ title }}</title>
+    <link rel="icon" type="image/svg+xml" href="{% static 'images/favicon.svg' %}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{% static 'images/favicon-32x32.png' %}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{% static 'images/favicon-16x16.png' %}">
+    <link rel="apple-touch-icon" sizes="180x180" href="{% static 'images/apple-touch-icon.png' %}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Albert+Sans:wght@400;500;600&family=Schibsted+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+<main class="at-links">
+    <header class="at-links__head">
+        <div class="headshot-slot" style="--slot: 104px"><img src="{% static 'images/headshot.jpg' %}" alt="Alex Petrakes" fetchpriority="high"><span>Headshot</span></div>
+        <h1 class="at-links__name">Alex Petrakes</h1>
+        <p class="at-label">Full-stack software engineer</p>
+        <p class="at-links__lede">I build data-intensive web applications. These are the ones you can use today, and where to find me.</p>
+    </header>
+
+    {% for section in sections %}
+    <section class="at-links__section" aria-labelledby="links-{{ forloop.counter }}">
+        <h2 class="at-label at-links__label" id="links-{{ forloop.counter }}">{{ section.label }}</h2>
+        <ul class="at-links__list">
+            {% for link in section.links %}
+            <li>
+                <a class="at-links__row" href="{{ link.url }}"{% if link.url|slice:":4" == "http" %} target="_blank" rel="noopener noreferrer"{% endif %}>
+                    <span class="at-links__text">
+                        <span class="at-links__title">{{ link.title }}{% if link.status %}<span class="at-status at-status--{{ link.status|slugify }}">{{ link.status }}</span>{% endif %}</span>
+                        <span class="at-links__note">{{ link.note }}</span>
+                        <span class="at-links__url">{{ link.display }}</span>
+                    </span>
+                    <svg class="at-links__arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"/></svg>
+                </a>
+            </li>
+            {% endfor %}
+        </ul>
+    </section>
+    {% endfor %}
+
+    <footer class="at-links__foot">
+        <p>&copy; {% now "Y" %} Alex Petrakes</p>
+    </footer>
+</main>
+</body>
+</html>

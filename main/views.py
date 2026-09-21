@@ -29,6 +29,84 @@ def home(request):
     return render(request, "main/home.html", {"title": "Alex Petrakes"})
 
 
+# Rows on the link-in-bio page (/links/), in display order. Edit here to add,
+# remove, or reorder; the template renders whatever is listed.
+LINK_SECTIONS = [
+    {
+        "label": "Applications",
+        "links": [
+            {
+                "title": "ReversePilot",
+                "note": "Loan origination system for reverse mortgages",
+                "url": "https://reversepilot.com",
+                "display": "reversepilot.com",
+                "status": "Live",
+            },
+            {
+                "title": "Atlas Address",
+                "note": "Property intelligence over 140 million parcel records",
+                "url": "https://atlasaddress.com",
+                "display": "atlasaddress.com",
+                "status": "Live",
+            },
+            {
+                "title": "Demand Signatures",
+                "note": "Document e-signing: upload, place fields, route, sign, audit",
+                "url": "https://demandsignatures.com",
+                "display": "demandsignatures.com",
+                "status": "Live",
+            },
+            {
+                "title": "LaneLogi",
+                "note": "Freight logistics: shipper TMS, carrier marketplace, bidding",
+                "url": "https://lanelogi.com",
+                "display": "lanelogi.com",
+                "status": "In development",
+            },
+        ],
+    },
+    {
+        "label": "Elsewhere",
+        "links": [
+            {
+                "title": "Portfolio",
+                "note": "About me, selected work, and a contact form",
+                "url": "/",
+                "display": "alexpetrakes.com",
+            },
+            {
+                "title": "LinkedIn",
+                "note": "Experience and background",
+                "url": "https://www.linkedin.com/in/apetrakes/",
+                "display": "linkedin.com/in/apetrakes",
+            },
+            {
+                "title": "GitHub",
+                "note": "Code and open work",
+                "url": "https://github.com/apetra-dev",
+                "display": "github.com/apetra-dev",
+            },
+            {
+                "title": "Email",
+                "note": "The fastest way to reach me",
+                "url": "mailto:apetrakes1@gmail.com",
+                "display": "apetrakes1@gmail.com",
+            },
+        ],
+    },
+]
+
+
+def links(request):
+    """Link-in-bio page: one tappable row per application and profile."""
+    logger.info("Links page accessed")
+    return render(
+        request,
+        "main/links.html",
+        {"title": "Alex Petrakes | Links", "sections": LINK_SECTIONS},
+    )
+
+
 def contact(request):
     """Contact form handler. Saves the submission and sends a verification email to the sender."""
     logger.info("Contact page or form accessed")

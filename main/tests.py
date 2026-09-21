@@ -382,3 +382,30 @@ class SenderIntelTests(TestCase):
         report = sender_intel.format_report(sender_intel.build_report(pending, lookups={}))
         self.assertIn("IP address  unknown", report)
         self.assertIn("No browser-side fields were posted", report)
+
+
+class LinksPageTests(TestCase):
+    def test_renders_every_configured_link(self):
+        from .views import LINK_SECTIONS
+
+        response = self.client.get(reverse("links"))
+        self.assertEqual(response.status_code, 200)
+        for section in LINK_SECTIONS:
+            self.assertContains(response, section["label"])
+            for link in section["links"]:
+                self.assertContains(response, f'href="{link["url"]}"')
+                self.assertContains(response, link["title"])
+
+    def test_external_links_open_in_new_tab_and_internal_do_not(self):
+        html = self.client.get(reverse("links")).content.decode()
+        self.assertIn(
+            'href="https://reversepilot.com" target="_blank" rel="noopener noreferrer"',
+            html,
+        )
+        self.assertIn('href="/">', html)
+        self.assertIn('href="mailto:apetrakes1@gmail.com">', html)
+
+    def test_status_chip_uses_existing_status_classes(self):
+        response = self.client.get(reverse("links"))
+        self.assertContains(response, "at-status--live")
+        self.assertContains(response, "at-status--in-development")
