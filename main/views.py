@@ -1,6 +1,11 @@
+from datetime import timedelta
+import re
+
 from django.conf import settings
 from django.contrib import messages
+from django.core.exceptions import ValidationError
 from django.core.mail import send_mail
+from django.core.validators import validate_email
 from django.shortcuts import render, redirect
 from django.template.loader import render_to_string
 from django.urls import reverse
@@ -20,6 +25,17 @@ HONEYPOT_FIELD = "website"
 SUCCESS_MESSAGE = (
     "Almost there! Check your inbox for a verification email and click the link to send your message."
 )
+
+# Relay abuse: bots post a victim's address with spam in the name field so the
+# verification email delivers it from our mailbox. The email no longer echoes
+# anything the sender typed, and these caps stop it being used as a mailer.
+MAX_NAME_LENGTH = 80
+LINK_PATTERN = re.compile(r"https?://|www\.|\w\.[a-z]{2,}/", re.IGNORECASE)
+LIMIT_PER_IP_PER_HOUR = 3
+LIMIT_PER_EMAIL_PER_DAY = 2
+# Sitewide circuit breaker on unverified submissions, so a botnet rotating
+# addresses still cannot push more than this through the mailbox per hour.
+LIMIT_UNVERIFIED_PER_HOUR = 15
 
 
 def home(request):
@@ -139,6 +155,42 @@ def contact(request):
         messages.error(request, "Please fill in all fields.")
         return redirect(reverse("home") + "#contact")
 
+    try:
+        validate_email(email)
+    except ValidationError:
+        logger.warning("Contact form validation failed - invalid email")
+        messages.error(request, "Please enter a valid email address.")
+        return redirect(reverse("home") + "#contact")
+
+    ip = sender_intel.client_ip(request)
+    abuse = _abuse_reason(name, email, ip)
+    if abuse:
+        # Look successful so the sender learns nothing, but store and send nothing.
+        logger.warning(
+            "Contact form dropped (%s) from %s for %s (%s)",
+            abuse,
+            ip,
+            email,
+            request.META.get("HTTP_USER_AGENT", ""),
+        )
+        messages.success(request, SUCCESS_MESSAGE)
+        return redirect(reverse("home") + "#contact")
+
+    if _recent_unverified_count() >= LIMIT_UNVERIFIED_PER_HOUR:
+        logger.error(
+            "Contact form circuit breaker open: %s unverified submissions in the last hour; "
+            "dropped one from %s for %s",
+            LIMIT_UNVERIFIED_PER_HOUR,
+            ip,
+            email,
+        )
+        messages.error(
+            request,
+            "The contact form is busy right now. "
+            "Please email me directly at apetrakes1@gmail.com.",
+        )
+        return redirect(reverse("home") + "#contact")
+
     submission_meta = sender_intel.capture(request)
     pending = PendingContact.objects.create(
         name=name,
@@ -159,7 +211,7 @@ def contact(request):
 
     verification_body = render_to_string(
         "main/emails/verification_email.txt",
-        {"name": name, "verify_url": verify_url},
+        {"verify_url": verify_url},
     )
 
     try:
@@ -187,6 +239,35 @@ def contact(request):
         )
 
     return redirect(reverse("home") + "#contact")
+
+
+def _abuse_reason(name, email, ip):
+    """Why a submission should be silently dropped, or None to accept it."""
+    if len(name) > MAX_NAME_LENGTH or LINK_PATTERN.search(name):
+        return "link or oversized name"
+    now = timezone.now()
+    if ip and (
+        PendingContact.objects.filter(
+            submitted_ip=ip, created_at__gte=now - timedelta(hours=1)
+        ).count()
+        >= LIMIT_PER_IP_PER_HOUR
+    ):
+        return "per-IP limit"
+    if (
+        PendingContact.objects.filter(
+            email__iexact=email, created_at__gte=now - timedelta(days=1)
+        ).count()
+        >= LIMIT_PER_EMAIL_PER_DAY
+    ):
+        return "per-email limit"
+    return None
+
+
+def _recent_unverified_count():
+    return PendingContact.objects.filter(
+        verified_at__isnull=True,
+        created_at__gte=timezone.now() - timedelta(hours=1),
+    ).count()
 
 
 def verify_contact(request, token):

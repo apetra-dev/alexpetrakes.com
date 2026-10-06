@@ -9,7 +9,12 @@ from django.utils import timezone
 
 from . import sender_intel
 from .models import PendingContact
-from .views import VERIFICATION_EXPIRY_HOURS
+from .views import (
+    LIMIT_PER_EMAIL_PER_DAY,
+    LIMIT_PER_IP_PER_HOUR,
+    LIMIT_UNVERIFIED_PER_HOUR,
+    VERIFICATION_EXPIRY_HOURS,
+)
 
 
 class PendingContactModelTests(TestCase):
@@ -119,6 +124,93 @@ class ContactViewTests(TestCase):
         mock_send.assert_not_called()
         msgs = list(get_messages(response.wsgi_request))
         self.assertTrue(any("check your inbox" in str(m).lower() for m in msgs))
+
+    @patch("main.views.send_mail")
+    def test_verification_email_does_not_echo_the_name(self, mock_send):
+        self.client.post(
+            reverse("contact"), data=dict(self.form_data, name="Totally Unique Sender")
+        )
+        self.assertNotIn("Totally Unique Sender", mock_send.call_args.kwargs["message"])
+
+    @patch("main.views.send_mail")
+    def test_link_in_name_stores_nothing_but_looks_successful(self, mock_send):
+        spam = "Hi Вам перевод 177215 руб. получить тут https://spam.example/abc"
+        response = self.client.post(
+            reverse("contact"), data=dict(self.form_data, name=spam), follow=True
+        )
+        self.assertEqual(PendingContact.objects.count(), 0)
+        mock_send.assert_not_called()
+        msgs = list(get_messages(response.wsgi_request))
+        self.assertTrue(any("check your inbox" in str(m).lower() for m in msgs))
+
+    @patch("main.views.send_mail")
+    def test_oversized_name_is_dropped(self, mock_send):
+        self.client.post(reverse("contact"), data=dict(self.form_data, name="A" * 81))
+        self.assertEqual(PendingContact.objects.count(), 0)
+        mock_send.assert_not_called()
+
+    @patch("main.views.send_mail")
+    def test_invalid_email_is_rejected(self, mock_send):
+        response = self.client.post(
+            reverse("contact"), data=dict(self.form_data, email="not-an-email"), follow=True
+        )
+        self.assertEqual(PendingContact.objects.count(), 0)
+        mock_send.assert_not_called()
+        msgs = list(get_messages(response.wsgi_request))
+        self.assertTrue(any("valid email" in str(m).lower() for m in msgs))
+
+    @patch("main.views.send_mail")
+    def test_per_ip_limit(self, mock_send):
+        for i in range(LIMIT_PER_IP_PER_HOUR + 2):
+            self.client.post(
+                reverse("contact"),
+                data=dict(self.form_data, email=f"person{i}@example.com"),
+                HTTP_X_FORWARDED_FOR="8.8.8.8",
+            )
+        self.assertEqual(PendingContact.objects.count(), LIMIT_PER_IP_PER_HOUR)
+        self.assertEqual(mock_send.call_count, LIMIT_PER_IP_PER_HOUR)
+
+    @patch("main.views.send_mail")
+    def test_per_email_limit_ignores_case(self, mock_send):
+        for i in range(LIMIT_PER_EMAIL_PER_DAY + 2):
+            self.client.post(
+                reverse("contact"),
+                data=dict(self.form_data, email="Victim@Example.com" if i % 2 else "victim@example.com"),
+                HTTP_X_FORWARDED_FOR=f"8.8.4.{i + 1}",
+            )
+        self.assertEqual(PendingContact.objects.count(), LIMIT_PER_EMAIL_PER_DAY)
+
+    @patch("main.views.send_mail")
+    def test_old_submissions_do_not_count_toward_limits(self, mock_send):
+        for i in range(LIMIT_PER_IP_PER_HOUR):
+            PendingContact.objects.create(
+                name="Old", email=f"old{i}@example.com", subject="s", message="m", submitted_ip="8.8.8.8"
+            )
+        PendingContact.objects.update(created_at=timezone.now() - timedelta(hours=2))
+        self.client.post(reverse("contact"), data=self.form_data, HTTP_X_FORWARDED_FOR="8.8.8.8")
+        mock_send.assert_called_once()
+
+    @patch("main.views.send_mail")
+    def test_circuit_breaker_stops_sending_and_points_to_email(self, mock_send):
+        for i in range(LIMIT_UNVERIFIED_PER_HOUR):
+            PendingContact.objects.create(
+                name="Bot", email=f"victim{i}@example.com", subject="s", message="m"
+            )
+        response = self.client.post(reverse("contact"), data=self.form_data, follow=True)
+        self.assertEqual(PendingContact.objects.count(), LIMIT_UNVERIFIED_PER_HOUR)
+        mock_send.assert_not_called()
+        msgs = list(get_messages(response.wsgi_request))
+        self.assertTrue(any("apetrakes1@gmail.com" in str(m) for m in msgs))
+
+    @patch("main.views.send_mail")
+    def test_verified_submissions_do_not_trip_the_circuit_breaker(self, mock_send):
+        for i in range(LIMIT_UNVERIFIED_PER_HOUR):
+            PendingContact.objects.create(
+                name="Real", email=f"real{i}@example.com", subject="s", message="m",
+                verified_at=timezone.now(),
+            )
+        self.client.post(reverse("contact"), data=self.form_data)
+        mock_send.assert_called_once()
 
     @patch("main.views.send_mail")
     def test_post_missing_fields_does_not_create_pending(self, mock_send):
