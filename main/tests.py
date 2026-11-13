@@ -1,3 +1,4 @@
+import time
 import uuid
 from datetime import timedelta
 from unittest.mock import patch
@@ -13,7 +14,9 @@ from .views import (
     LIMIT_PER_EMAIL_PER_DAY,
     LIMIT_PER_IP_PER_HOUR,
     LIMIT_UNVERIFIED_PER_HOUR,
+    MIN_FILL_SECONDS,
     VERIFICATION_EXPIRY_HOURS,
+    make_form_token,
 )
 
 
@@ -58,6 +61,8 @@ class ContactViewTests(TestCase):
             "email": "alice@example.com",
             "subject": "Hello",
             "message": "Test message body",
+            # The page was rendered a minute ago, as for a person typing.
+            "form_token": make_form_token(time.time() - 60),
         }
 
     @patch("main.views.send_mail")
@@ -124,6 +129,51 @@ class ContactViewTests(TestCase):
         mock_send.assert_not_called()
         msgs = list(get_messages(response.wsgi_request))
         self.assertTrue(any("check your inbox" in str(m).lower() for m in msgs))
+
+    def test_home_renders_a_form_token(self):
+        response = self.client.get(reverse("home"))
+        token = response.context["form_token"]
+        self.assertTrue(token)
+        self.assertContains(response, f'name="form_token" value="{token}"')
+
+    @patch("main.views.send_mail")
+    def test_post_right_after_page_load_stores_nothing_but_looks_successful(self, mock_send):
+        response = self.client.post(
+            reverse("contact"),
+            data=dict(self.form_data, form_token=make_form_token()),
+            follow=True,
+        )
+        self.assertEqual(PendingContact.objects.count(), 0)
+        mock_send.assert_not_called()
+        msgs = list(get_messages(response.wsgi_request))
+        self.assertTrue(any("check your inbox" in str(m).lower() for m in msgs))
+
+    @patch("main.views.send_mail")
+    def test_post_after_the_minimum_fill_time_is_accepted(self, mock_send):
+        token = make_form_token(time.time() - MIN_FILL_SECONDS - 1)
+        self.client.post(reverse("contact"), data=dict(self.form_data, form_token=token))
+        self.assertEqual(PendingContact.objects.count(), 1)
+        mock_send.assert_called_once()
+
+    @patch("main.views.send_mail")
+    def test_post_without_a_form_token_is_rejected(self, mock_send):
+        data = dict(self.form_data)
+        del data["form_token"]
+        response = self.client.post(reverse("contact"), data=data, follow=True)
+        self.assertEqual(PendingContact.objects.count(), 0)
+        mock_send.assert_not_called()
+        msgs = list(get_messages(response.wsgi_request))
+        self.assertTrue(any("refresh the page" in str(m).lower() for m in msgs))
+
+    @patch("main.views.send_mail")
+    def test_post_with_a_forged_form_token_is_rejected(self, mock_send):
+        response = self.client.post(
+            reverse("contact"), data=dict(self.form_data, form_token="12345:forged"), follow=True
+        )
+        self.assertEqual(PendingContact.objects.count(), 0)
+        mock_send.assert_not_called()
+        msgs = list(get_messages(response.wsgi_request))
+        self.assertTrue(any("refresh the page" in str(m).lower() for m in msgs))
 
     @patch("main.views.send_mail")
     def test_verification_email_does_not_echo_the_name(self, mock_send):
@@ -214,9 +264,15 @@ class ContactViewTests(TestCase):
 
     @patch("main.views.send_mail")
     def test_post_missing_fields_does_not_create_pending(self, mock_send):
-        self.client.post(reverse("contact"), data={"name": "Alice"})
+        response = self.client.post(
+            reverse("contact"),
+            data={"name": "Alice", "form_token": self.form_data["form_token"]},
+            follow=True,
+        )
         self.assertEqual(PendingContact.objects.count(), 0)
         mock_send.assert_not_called()
+        msgs = list(get_messages(response.wsgi_request))
+        self.assertTrue(any("fill in all fields" in str(m).lower() for m in msgs))
 
     @patch("main.views.send_mail")
     def test_post_send_failure_deletes_pending_contact(self, mock_send):
