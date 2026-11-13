@@ -1,8 +1,10 @@
 from datetime import timedelta
 import re
+import time
 
 from django.conf import settings
 from django.contrib import messages
+from django.core import signing
 from django.core.exceptions import ValidationError
 from django.core.mail import send_mail
 from django.core.validators import validate_email
@@ -37,12 +39,38 @@ LIMIT_PER_EMAIL_PER_DAY = 2
 # addresses still cannot push more than this through the mailbox per hour.
 LIMIT_UNVERIFIED_PER_HOUR = 15
 
+# The bots fetch the page and post a second or two later. The form carries the
+# signed time it was rendered, and a post that arrives sooner than a person
+# could type a message is dropped.
+FORM_TOKEN_FIELD = "form_token"
+FORM_TOKEN_SALT = "main.contact.form"
+MIN_FILL_SECONDS = 5
+
+
+def make_form_token(rendered_at=None):
+    """Signed time the contact form was rendered, posted back with the form."""
+    return signing.dumps(
+        time.time() if rendered_at is None else rendered_at, salt=FORM_TOKEN_SALT
+    )
+
+
+def _form_age_seconds(token):
+    """Seconds since the form carrying this token was rendered, or None if it is not ours."""
+    try:
+        return time.time() - float(signing.loads(token, salt=FORM_TOKEN_SALT))
+    except (signing.BadSignature, TypeError, ValueError):
+        return None
+
 
 def home(request):
     """Single-page home: hero, about, selected work, contact."""
     logger.info("Home page accessed")
     sender_intel.track_visit(request)
-    return render(request, "main/home.html", {"title": "Alex Petrakes"})
+    return render(
+        request,
+        "main/home.html",
+        {"title": "Alex Petrakes", "form_token": make_form_token()},
+    )
 
 
 # Rows on the link-in-bio page (/links/), in display order. Edit here to add,
@@ -146,6 +174,18 @@ def contact(request):
         messages.success(request, SUCCESS_MESSAGE)
         return redirect(reverse("home") + "#contact")
 
+    form_age = _form_age_seconds(request.POST.get(FORM_TOKEN_FIELD, ""))
+    if form_age is None:
+        # Not posted from a page we rendered. A real visitor with a stale tab
+        # gets told what to do; nothing is stored or sent.
+        logger.warning(
+            "Contact form posted without a valid form token from %s (%s)",
+            sender_intel.client_ip(request),
+            request.META.get("HTTP_USER_AGENT", ""),
+        )
+        messages.error(request, "Please refresh the page and try again.")
+        return redirect(reverse("home") + "#contact")
+
     logger.debug(
         f"Form data received - Name: {name}, Email: {email}, Subject: {subject}"
     )
@@ -163,7 +203,7 @@ def contact(request):
         return redirect(reverse("home") + "#contact")
 
     ip = sender_intel.client_ip(request)
-    abuse = _abuse_reason(name, email, ip)
+    abuse = _abuse_reason(name, email, ip, form_age)
     if abuse:
         # Look successful so the sender learns nothing, but store and send nothing.
         logger.warning(
@@ -241,8 +281,10 @@ def contact(request):
     return redirect(reverse("home") + "#contact")
 
 
-def _abuse_reason(name, email, ip):
+def _abuse_reason(name, email, ip, form_age):
     """Why a submission should be silently dropped, or None to accept it."""
+    if form_age < MIN_FILL_SECONDS:
+        return f"posted {form_age:.1f}s after page load"
     if len(name) > MAX_NAME_LENGTH or LINK_PATTERN.search(name):
         return "link or oversized name"
     now = timezone.now()
